@@ -9,7 +9,7 @@ namespace Bumblebee
     {
         static async Task Main()
         {
-            Console.WriteLine("Enter:\n\"1\" to transform source json\n\"2\" to process destination json\n\"3\" to add new parameter in all processes");
+            Console.WriteLine("Enter:\n\"1\" to transform source json\n\"2\" to process destination json\n\"3\" to add new parameter in all processes\n\"4\" full search");
             Variables.Step = Console.ReadLine();
 
             if (Variables.Step == "1")

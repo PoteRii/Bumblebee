@@ -27,6 +27,11 @@ namespace Bumblebee
                 await AddNewParamToAll(nodeServices);
             }
 
+            if (Variables.Step == "4")
+            {
+                await FullSearch(nodeServices);
+            }
+
             Console.WriteLine("Done");
         }
 
@@ -71,6 +76,22 @@ namespace Bumblebee
                                                                                                 Variables.NewParameterSendToApis));
 
             File.WriteAllText("ParameterAdded.json", JsonConvert.SerializeObject(data));
+        }
+
+        public async Task FullSearch(INodeServices nodeServices)
+        {
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine("Enter json path");
+            Variables.SourceJsonPath = Console.ReadLine();
+            Console.WriteLine("Enter keyword to search");
+            var keyword = Console.ReadLine();
+
+            dynamic data = JsonConvert.DeserializeObject(await nodeServices.InvokeAsync<string>("fullSearch",
+                                                                                                File.ReadAllText(Variables.SourceJsonPath),
+                                                                                                keyword));
+
+            File.WriteAllText("FullSearchResult.json", JsonConvert.SerializeObject(data));
         }
     }
 }
