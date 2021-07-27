@@ -14,8 +14,7 @@
                             {
                                 processId: item.obj_id,
                                 processName: item.title,
-
-                                inProcessParam: true
+                                processParam: true
                             });
                     }
                 }
@@ -24,14 +23,15 @@
                     for (var j = 0; j < item.scheme.nodes.length; j++) {
                         var node = item.scheme.nodes[j];
                         if (node.condition && node.condition.logics) {
+                            var callProcessArgument = false;
+                            var copyTaskArgument = false;
+                            var apiCallUrlArgument = false;
+                            var apiCallBodyArgument = false;
+                            var apiCallHeaderArgument = false;
+                            var apiCode = false;
+                            var condition = false;
+
                             for (var k = 0; k < node.condition.logics.length; k++) {
-
-                                var callProcessArgument = false;
-                                var copyTaskArgument = false;
-                                var apiCallUrlArgument = false;
-                                var apiCallArgument = false;
-                                var apiCallHeaderArgument = false;
-
                                 var logic = node.condition.logics[k];
                                 if (logic.type == "api_rpc") {
                                     var keys = Object.keys(logic.extra);
@@ -57,7 +57,7 @@
                                     var values = Object.values(logic.extra);
 
                                     if (keys.filter(key => key.toLowerCase().includes(keyWord.toLowerCase())).length > 0 || values.filter(value => value.toLowerCase().includes(keyWord.toLowerCase())).length > 0) {
-                                        apiCallArgument = true
+                                        apiCallBodyArgument = true
                                     }
 
                                     var headerKeys = Object.keys(logic.extra_headers);
@@ -66,34 +66,56 @@
                                     if (headerKeys.filter(key => key.toLowerCase().includes(keyWord.toLowerCase())).length > 0 || headerValues.filter(value => value.toLowerCase().includes(keyWord.toLowerCase())).length > 0) {
                                         apiCallHeaderArgument = true
                                     }
-                                }
+                                } else if (logic.type == "api_code") {
 
-                                if (callProcessArgument == true ||
-                                    copyTaskArgument == true ||
-                                    apiCallUrlArgument == true ||
-                                    apiCallArgument == true ||
-                                    apiCallHeaderArgument == true) {
-                                    var containingProcess = containingProcesses.filter(process => process.processId == item.obj_id);
-                                    if (containingProcess && containingProcess.length > 0) {
-                                        containingProcesses.filter(process => process.processId == item.obj_id)[0].callProcessArgument = callProcessArgument;
-                                        containingProcesses.filter(process => process.processId == item.obj_id)[0].copyTaskArgument = copyTaskArgument;
-                                        containingProcesses.filter(process => process.processId == item.obj_id)[0].apiCallUrlArgument = apiCallUrlArgument;
-                                        containingProcesses.filter(process => process.processId == item.obj_id)[0].apiCallArgument = apiCallArgument;
-                                        containingProcesses.filter(process => process.processId == item.obj_id)[0].apiCallHeaderArgument = apiCallHeaderArgument;
-                                    } else {
-                                        containingProcesses.push(
-                                            {
-                                                processId: item.obj_id,
-                                                processName: item.title,
-
-                                                inProcessParam: false,
-                                                callProcessArgument: callProcessArgument,
-                                                copyTaskArgument: copyTaskArgument,
-                                                apiCallUrlArgument: apiCallUrlArgument,
-                                                apiCallArgument: apiCallArgument,
-                                                apiCallHeaderArgument: apiCallHeaderArgument
-                                            });
+                                    if (logic.src.toLowerCase().includes(keyWord.toLowerCase())) {
+                                        apiCode = true;
                                     }
+                                } else if (logic.type == "go_if_const") {
+                                    for (var m = 0; m < logic.conditions.length; m++) {
+                                        var goIfCondition = logic.conditions[m];
+                                        if (goIfCondition) {
+                                            var values = Object.values(goIfCondition);
+
+                                            if (values.filter(value => value.toLowerCase().includes(keyWord.toLowerCase())).length > 0) {
+                                                condition = true
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (callProcessArgument == true ||
+                                copyTaskArgument == true ||
+                                apiCallUrlArgument == true ||
+                                apiCallBodyArgument == true ||
+                                apiCallHeaderArgument == true ||
+                                apiCode == true ||
+                                condition == true) {
+                                var containingProcess = containingProcesses.filter(process => process.processId == item.obj_id);
+                                if (containingProcess && containingProcess.length > 0) {
+                                    containingProcesses.filter(process => process.processId == item.obj_id)[0].callProcessArgument = callProcessArgument;
+                                    containingProcesses.filter(process => process.processId == item.obj_id)[0].copyTaskArgument = copyTaskArgument;
+                                    containingProcesses.filter(process => process.processId == item.obj_id)[0].apiCallUrlArgument = apiCallUrlArgument;
+                                    containingProcesses.filter(process => process.processId == item.obj_id)[0].apiCallArgument = apiCallBodyArgument;
+                                    containingProcesses.filter(process => process.processId == item.obj_id)[0].apiCallHeaderArgument = apiCallHeaderArgument;
+                                    containingProcesses.filter(process => process.processId == item.obj_id)[0].apiCode = apiCode;
+                                    containingProcesses.filter(process => process.processId == item.obj_id)[0].condition = condition;
+                                } else {
+                                    containingProcesses.push(
+                                        {
+                                            processId: item.obj_id,
+                                            processName: item.title,
+                                            processParam: false,
+
+                                            callProcessArgument: callProcessArgument,
+                                            copyTaskArgument: copyTaskArgument,
+                                            apiCallUrlArgument: apiCallUrlArgument,
+                                            apiCallArgument: apiCallBodyArgument,
+                                            apiCallHeaderArgument: apiCallHeaderArgument,
+                                            apiCode: apiCode,
+                                            condition: condition
+                                        });
                                 }
                             }
                         }
@@ -101,11 +123,6 @@
                 }
             }
         }
-
-        
-
-
-
 
         return JSON.stringify(containingProcesses);
     }

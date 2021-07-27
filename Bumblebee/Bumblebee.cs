@@ -91,6 +91,9 @@ namespace Bumblebee
                                                                                                 File.ReadAllText(Variables.SourceJsonPath),
                                                                                                 keyword));
 
+            if (File.Exists("FullSearchResult.json"))
+                File.Delete("FullSearchResult.json");
+
             File.WriteAllText("FullSearchResult.json", JsonConvert.SerializeObject(data));
         }
     }
