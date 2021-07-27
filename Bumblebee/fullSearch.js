@@ -149,13 +149,13 @@
         for (var n = 0; n < containingProcesses.length; n++) {
             var containingProcess = containingProcesses[n];
 
-            containingProcesses[n].callerProcesses = callerProcesses(content, containingProcess.processId);
+            containingProcesses[n].referrerProcesses = referrerProcesses(content, containingProcess.processId);
         }
 
         return JSON.stringify(containingProcesses);
     }
 
-    var callerProcesses = function (content, processId) {
+    var referrerProcesses = function (content, processId) {
         var data = content;
 
         var responseData = [];
