@@ -146,7 +146,46 @@
             }
         }
 
+        for (var n = 0; n < containingProcesses.length; n++) {
+            var containingProcess = containingProcesses[n];
+
+            containingProcesses[n].callerProcesses = callerProcesses(content, containingProcess.processId);
+        }
+
         return JSON.stringify(containingProcesses);
+    }
+
+    var callerProcesses = function (content, processId) {
+        var data = content;
+
+        var responseData = [];
+
+        for (var i = 0; i < data.length; i++) {
+            var item = data[i];
+
+            if (item.conv_type == "process") {
+                if (item.scheme.nodes) {
+                    for (var j = 0; j < item.scheme.nodes.length; j++) {
+                        var node = item.scheme.nodes[j];
+                        if (node.condition && node.condition.logics) {
+                            for (var k = 0; k < node.condition.logics.length; k++) {
+                                var logic = node.condition.logics[k];
+                                if (logic.type == "api_rpc" || logic.type == "api_copy") {
+                                    if (logic.conv_id == processId) {
+                                        responseData.push({
+                                            processId: item.obj_id,
+                                            processName: item.title
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return responseData;
     }
 
     callback(null, process(JSON.parse(content), keyWord));
