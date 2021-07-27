@@ -149,13 +149,17 @@
         for (var n = 0; n < containingProcesses.length; n++) {
             var containingProcess = containingProcesses[n];
 
-            containingProcesses[n].referrerProcesses = referrerProcesses(content, containingProcess.processId);
+            var referrerProcesses = getReferrerProcesses(content, containingProcess.processId);
+            var referrerProcessCount = referrerProcesses.length;
+
+            containingProcesses[n].referrerProcessCount = referrerProcessCount;
+            containingProcesses[n].referrerProcesses = referrerProcesses;
         }
 
         return JSON.stringify(containingProcesses);
     }
 
-    var referrerProcesses = function (content, processId) {
+    var getReferrerProcesses = function (content, processId) {
         var data = content;
 
         var responseData = [];
@@ -172,10 +176,12 @@
                                 var logic = node.condition.logics[k];
                                 if (logic.type == "api_rpc" || logic.type == "api_copy") {
                                     if (logic.conv_id == processId) {
-                                        responseData.push({
-                                            processId: item.obj_id,
-                                            processName: item.title
-                                        });
+                                        if (responseData.filter(proc => proc.processId == item.obj_id).length == 0) {
+                                            responseData.push({
+                                                processId: item.obj_id,
+                                                processName: item.title
+                                            });
+                                        }
                                     }
                                 }
                             }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.NodeServices;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Bumblebee
@@ -9,7 +10,16 @@ namespace Bumblebee
     {
         static async Task Main()
         {
-            Console.WriteLine("Enter:\n\"1\" to transform source json\n\"2\" to process destination json\n\"3\" to add new parameter in all processes\n\"4\" full search");
+            var sb = new StringBuilder();
+            sb.Append("Enter:\n");
+            sb.Append("\"1\" to transform source json\n");
+            sb.Append("\"2\" to process destination json\n");
+            sb.Append("\"3\" to add new parameter in all processes\n");
+            sb.Append("\"4\" to full search\n");
+            sb.Append("\"5\" to get referrer processes\n");
+
+
+            Console.WriteLine(sb.ToString());
             Variables.Step = Console.ReadLine();
 
             if (Variables.Step == "1")

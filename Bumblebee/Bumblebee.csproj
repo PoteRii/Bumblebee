@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <None Remove="fullSearch.js" />
+    <None Remove="getReferrerProcesses.js" />
     <None Remove="newParameterInAllProcesses.js" />
     <None Remove="process.js" />
     <None Remove="processes.json" />
@@ -19,6 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="getReferrerProcesses.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="newParameterInAllProcesses.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
