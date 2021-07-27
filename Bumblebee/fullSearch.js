@@ -30,6 +30,8 @@
                             var apiCallHeaderArgument = false;
                             var apiCode = false;
                             var condition = false;
+                            var setParameter = false;
+                            var replyToProcess = false;
 
                             for (var k = 0; k < node.condition.logics.length; k++) {
                                 var logic = node.condition.logics[k];
@@ -82,6 +84,20 @@
                                             }
                                         }
                                     }
+                                } else if (logic.type == "set_param") {
+                                    var keys = Object.keys(logic.extra);
+                                    var values = Object.values(logic.extra);
+
+                                    if (keys.filter(key => key.toLowerCase().includes(keyWord.toLowerCase())).length > 0 || values.filter(value => value.toLowerCase().includes(keyWord.toLowerCase())).length > 0) {
+                                        setParameter = true
+                                    } 
+                                } else if (logic.type == "api_rpc_reply") {
+                                    var keys = Object.keys(logic.res_data);
+                                    var values = Object.values(logic.res_data);
+
+                                    if (keys.filter(key => key.toLowerCase().includes(keyWord.toLowerCase())).length > 0 || values.filter(value => value.toLowerCase().includes(keyWord.toLowerCase())).length > 0) {
+                                        replyToProcess = true
+                                    }
                                 }
                             }
 
@@ -91,7 +107,9 @@
                                 apiCallBodyArgument == true ||
                                 apiCallHeaderArgument == true ||
                                 apiCode == true ||
-                                condition == true) {
+                                condition == true ||
+                                setParameter == true ||
+                                replyToProcess == true) {
                                 var containingProcess = containingProcesses.filter(process => process.processId == item.obj_id);
                                 if (containingProcess && containingProcess.length > 0) {
                                     containingProcesses.filter(process => process.processId == item.obj_id)[0].callProcessArgument = callProcessArgument;
@@ -101,6 +119,8 @@
                                     containingProcesses.filter(process => process.processId == item.obj_id)[0].apiCallHeaderArgument = apiCallHeaderArgument;
                                     containingProcesses.filter(process => process.processId == item.obj_id)[0].apiCode = apiCode;
                                     containingProcesses.filter(process => process.processId == item.obj_id)[0].condition = condition;
+                                    containingProcesses.filter(process => process.processId == item.obj_id)[0].setParameter = setParameter;
+                                    containingProcesses.filter(process => process.processId == item.obj_id)[0].replyToProcess = replyToProcess;
                                 } else {
                                     containingProcesses.push(
                                         {
@@ -114,7 +134,9 @@
                                             apiCallArgument: apiCallBodyArgument,
                                             apiCallHeaderArgument: apiCallHeaderArgument,
                                             apiCode: apiCode,
-                                            condition: condition
+                                            condition: condition,
+                                            setParameter: setParameter,
+                                            replyToProcess: replyToProcess
                                         });
                                 }
                             }
