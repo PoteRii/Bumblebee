@@ -37,6 +37,11 @@ namespace Bumblebee
                 await GetReferrerProcesses(nodeServices);
             }
 
+            if (Variables.Step == "6")
+            {
+                await GetProcessPaths(nodeServices);
+            }
+
             Console.WriteLine("Done");
         }
 
@@ -119,6 +124,25 @@ namespace Bumblebee
                 File.Delete("ReferrerProcesses.json");
 
             File.WriteAllText("ReferrerProcesses.json", JsonConvert.SerializeObject(data));
+        }
+
+        public async Task GetProcessPaths(INodeServices nodeServices)
+        {
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine("Enter json path");
+            Variables.SourceJsonPath = Console.ReadLine();
+            Console.WriteLine("Enter processes path");
+            var processIdsPath = Console.ReadLine();
+
+            dynamic data = JsonConvert.DeserializeObject(await nodeServices.InvokeAsync<string>("getFolderByProcesses",
+                                                                                                File.ReadAllText(Variables.SourceJsonPath),
+                                                                                                File.ReadAllText(processIdsPath)));
+
+            if (File.Exists("ProcessPaths.json"))
+                File.Delete("ProcessPaths.json");
+
+            File.WriteAllText("ProcessPaths.json", JsonConvert.SerializeObject(data));
         }
     }
 }

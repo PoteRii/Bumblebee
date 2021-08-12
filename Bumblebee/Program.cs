@@ -17,6 +17,7 @@ namespace Bumblebee
             sb.Append("\"3\" to add new parameter in all processes\n");
             sb.Append("\"4\" to full search\n");
             sb.Append("\"5\" to get referrer processes\n");
+            sb.Append("\"6\" to get process paths\n");
 
 
             Console.WriteLine(sb.ToString());

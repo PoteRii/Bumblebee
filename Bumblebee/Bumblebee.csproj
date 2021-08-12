@@ -12,6 +12,7 @@
     <None Remove="process.js" />
     <None Remove="processes.json" />
     <None Remove="transform.js" />
+    <None Remove="getFolderByProcesses.js" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +34,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="fullSearch.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="getFolderByProcesses.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
