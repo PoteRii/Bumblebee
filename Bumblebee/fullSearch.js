@@ -156,6 +156,33 @@
             containingProcesses[n].referrerProcesses = referrerProcesses;
         }
 
+        for (var n = 0; n < containingProcesses.length; n++) {
+            var containingProcess = containingProcesses[n];
+
+            var processId = containingProcess.processId;
+
+            var processItems = data.filter(item => item.obj_id == processId);
+            if (processItems.length > 0) {
+                var path = processItems[0].title;
+                var processParentId = processItems[0].parent_id;
+
+                while (processParentId > 0) {
+                    var container = containingFolder(data, processParentId);
+                    if (container != null) {
+                        path = container.title + "/" + path;
+
+                        processParentId = container.obj_id;
+                    } else {
+                        processParentId = 0;
+                    }
+                }
+
+                if (path) {
+                    containingProcesses[n].FolderPath = "/" + path;
+                }
+            }
+        }
+
         return JSON.stringify(containingProcesses);
     }
 
@@ -192,6 +219,21 @@
         }
 
         return responseData;
+    }
+
+    var containingFolder = function (content, itemId) {
+        var data = content;
+
+        var parentItems = data.filter(item => item.obj_id == itemId);
+        if (parentItems.length > 0) {
+            return {
+                title: parentItems[0].title,
+                obj_id: parentItems[0].parent_id
+            }
+
+        }
+
+        return null;
     }
 
     callback(null, process(JSON.parse(content), keyWord));
